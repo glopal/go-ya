@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 	"github.com/spf13/cobra"
 )
 
@@ -19,10 +19,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, arg := range args {
-			fmt.Println(arg)
-		}
-		ec := yplib.NewExecContext(yplib.ExecOptions{
+		ec := yalib.NewExecContext(yalib.ExecOptions{
 			Dir:          dir,
 			OutputFormat: outputFormat,
 		})
@@ -37,7 +34,7 @@ to quickly create a Cobra application.`,
 			os.Exit(0)
 		}
 
-		err := ec.Run(yplib.StdInIo(cmd.InOrStdin()))
+		err := ec.Run(yalib.StdInIo(cmd.InOrStdin()))
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -26,6 +26,7 @@ func Execute() {
 }
 
 func init() {
+	// TODO convert the dir flag to just be the first arg
 	rootCmd.PersistentFlags().StringVarP(&dir, "dir", "d", ".", "The directory that contains main.yml")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output-format", "o", "yaml", "The output format hint. Defaults to 'yaml'. Valid values: yaml,json")
 }

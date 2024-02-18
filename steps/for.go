@@ -1,21 +1,21 @@
 package steps
 
 import (
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 	"gopkg.in/yaml.v3"
 )
 
 func init() {
-	yplib.RegisterStep("for", NewFor)
+	yalib.RegisterStep("for", NewFor)
 }
 
 type For struct {
 	Seq *yaml.Node
-	Wf  yplib.Workflow
+	Wf  yalib.Workflow
 }
 
-func NewFor(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
-	wf, err := yplib.NewWorkflow("", node.Node, ech)
+func NewFor(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
+	wf, err := yalib.NewWorkflow("", node.Node, ech)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func NewFor(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step
 	return r, nil
 }
 
-func (r For) Run(ion yplib.IoNode) (yplib.IoNode, error) {
+func (r For) Run(ion yalib.IoNode) (yalib.IoNode, error) {
 	if ion.GetNode().Kind != yaml.SequenceNode {
 		panic("expected !!seq (TODO: wrap input in seq)")
 	}

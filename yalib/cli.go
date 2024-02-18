@@ -1,4 +1,4 @@
-package yplib
+package yalib
 
 type Cli struct {
 	Cli Command `yaml:"cli"`

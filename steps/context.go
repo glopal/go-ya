@@ -1,24 +1,27 @@
 package steps
 
 import (
-	"github.com/glopal/go-yp/yplib"
+	"encoding/gob"
+
+	"github.com/glopal/go-ya/yalib"
 )
 
 func init() {
-	yplib.RegisterStep("context", NewContext)
+	gob.Register(Context{})
+	yalib.RegisterStep("context", NewContext)
 }
 
 type Context struct {
-	node yplib.Node
+	Node yalib.Node
 }
 
-func NewContext(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
+func NewContext(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
 	return Context{
-		node: node,
+		Node: node,
 	}, nil
 }
 
-func (c Context) Run(ion yplib.IoNode) (yplib.IoNode, error) {
-	node := c.node.Resolve(ion)
+func (c Context) Run(ion yalib.IoNode) (yalib.IoNode, error) {
+	node := c.Node.Resolve(ion)
 	return ion.Out(node.Node), nil
 }

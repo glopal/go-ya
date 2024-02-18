@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 	"github.com/spf13/cobra"
 )
 
@@ -24,35 +26,37 @@ to quickly create a Cobra application.`,
 		for _, arg := range args {
 			fmt.Println(arg)
 		}
-		ec := yplib.NewExecContext(yplib.ExecOptions{
+		ec := yalib.NewExecContext(yalib.ExecOptions{
 			Dir:          dir,
 			OutputFormat: outputFormat,
 		})
 
-		fi, err := os.OpenFile("./output.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+		var b bytes.Buffer
+		enc := gob.NewEncoder(io.Writer(&b))
+
+		err := os.WriteFile("./output.txt", b.Bytes(), 0644)
 		if err != nil {
 			panic(err)
 		}
-		enc := gob.NewEncoder(fi)
 
 		err = enc.Encode(ec)
 		if err != nil {
 			log.Fatal("encode error:", err)
 		}
 
-		fi, err = os.Open("./output.txt")
+		fi, err := os.Open("./output.txt")
 		if err != nil {
 			panic(err)
 		}
 		dec := gob.NewDecoder(fi)
 
-		nec := yplib.ExecContext{}
+		nec := yalib.ExecContext{}
 		err = dec.Decode(&nec)
 		if err != nil {
 			log.Fatal("decode error:", err)
 		}
 
-		err = nec.Run(yplib.StdInIo(cmd.InOrStdin()))
+		err = nec.Run(yalib.StdInIo(cmd.InOrStdin()))
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

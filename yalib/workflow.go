@@ -1,4 +1,4 @@
-package yplib
+package yalib
 
 import (
 	"gopkg.in/yaml.v3"

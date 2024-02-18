@@ -1,4 +1,4 @@
-module github.com/glopal/go-yp
+module github.com/glopal/go-ya
 
 go 1.22
 

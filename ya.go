@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/glopal/go-yp/cmd"
-	_ "github.com/glopal/go-yp/steps"
+	"github.com/glopal/go-ya/cmd"
+	_ "github.com/glopal/go-ya/steps"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"gopkg.in/op/go-logging.v1"
 )

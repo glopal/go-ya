@@ -3,22 +3,22 @@ package steps
 import (
 	"strconv"
 
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"gopkg.in/yaml.v3"
 )
 
 func init() {
-	yplib.RegisterStep("elseif", NewElseIf)
+	yalib.RegisterStep("elseif", NewElseIf)
 }
 
 type ElseIf struct {
-	Conditions map[*yqlib.ExpressionNode]yplib.Workflow
+	Conditions map[*yqlib.ExpressionNode]yalib.Workflow
 }
 
-func NewElseIf(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
+func NewElseIf(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
 	elseIf := ElseIf{
-		Conditions: map[*yqlib.ExpressionNode]yplib.Workflow{},
+		Conditions: map[*yqlib.ExpressionNode]yalib.Workflow{},
 	}
 
 	rawConditions := map[string]yaml.Node{}
@@ -33,7 +33,7 @@ func NewElseIf(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.S
 			return nil, err
 		}
 
-		wf, err := yplib.NewWorkflow("", &n, ech)
+		wf, err := yalib.NewWorkflow("", &n, ech)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func NewElseIf(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.S
 	return elseIf, nil
 }
 
-func (ei ElseIf) Run(ion yplib.IoNode) (yplib.IoNode, error) {
+func (ei ElseIf) Run(ion yalib.IoNode) (yalib.IoNode, error) {
 	for en, wf := range ei.Conditions {
 		cn := ion.Yq(en).GetCandidateNodes()
 		if len(cn) > 0 {

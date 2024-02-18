@@ -1,10 +1,13 @@
 --- !yp/main
 steps:
+  - context:
+      username: mmenzies
+      password: foobar123
   - http: !post
       url: "https://httpbin.org/post"
       payload:
         form:
-          username: mmenzies
-          password: foobar123
+          username: !yq .username
+          password: !yq .password
           _csrf: kdfjghsdkjfghsdkjgh
   - yq: '.response.body | from_json | .form | ... style=""'

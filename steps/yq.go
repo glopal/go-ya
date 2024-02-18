@@ -1,25 +1,28 @@
 package steps
 
 import (
-	"github.com/glopal/go-yp/yplib"
+	"encoding/gob"
+
+	"github.com/glopal/go-ya/yalib"
 )
 
 func init() {
-	yplib.RegisterStep("yq", NewYq)
+	gob.Register(Yq{})
+	yalib.RegisterStep("yq", NewYq)
 }
 
 type Yq struct {
-	Val yplib.Dval
+	Val yalib.Dval
 }
 
-func NewYq(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
+func NewYq(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
 	yq := Yq{
 		Val: node.ValueResolver("."),
 	}
 	return yq, nil
 }
 
-func (yq Yq) Run(ion yplib.IoNode) (yplib.IoNode, error) {
+func (yq Yq) Run(ion yalib.IoNode) (yalib.IoNode, error) {
 	yqIo, err := yq.Val(ion)
 	if err != nil {
 		return nil, err

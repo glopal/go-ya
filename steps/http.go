@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"gopkg.in/yaml.v3"
 )
@@ -20,16 +19,16 @@ var wrapValuesInSeq *yqlib.ExpressionNode
 
 func init() {
 	gob.Register(Http{})
-	yplib.RegisterStep("http", NewHttp)
+	yalib.RegisterStep("http", NewHttp)
 }
 
 type Http struct {
 	client      http.Client
 	Method      string
-	Url         yplib.Dval
-	Headers     yplib.Dval
-	PayloadForm yplib.Dval
-	PayloadJson yplib.Dval
+	Url         yalib.Dval
+	Headers     yalib.Dval
+	PayloadForm yalib.Dval
+	PayloadJson yalib.Dval
 }
 
 type httpOut struct {
@@ -42,7 +41,7 @@ type httpResponse struct {
 	Headers map[string][]string `yaml:"headers"`
 }
 
-func NewHttp(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
+func NewHttp(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
 	if wrapValuesInSeq == nil {
 		en, _ := yqlib.ExpressionParser.ParseExpression(`with((.[] | select(kind != "seq")); . = [.])`)
 		wrapValuesInSeq = en
@@ -65,7 +64,7 @@ func NewHttp(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Ste
 	}, nil
 }
 
-func (h Http) Run(ion yplib.IoNode) (yplib.IoNode, error) {
+func (h Http) Run(ion yalib.IoNode) (yalib.IoNode, error) {
 	URL, err := getUrl(h.Url, ion)
 	if err != nil {
 		return nil, err
@@ -119,7 +118,7 @@ func (h Http) Run(ion yplib.IoNode) (yplib.IoNode, error) {
 	return ion.Out(outNode), nil
 }
 
-func getUrl(urlResolver yplib.Dval, input yplib.IoNode) (string, error) {
+func getUrl(urlResolver yalib.Dval, input yalib.IoNode) (string, error) {
 	urlIo, err := urlResolver(input)
 	if err != nil {
 		return "", err
@@ -128,7 +127,7 @@ func getUrl(urlResolver yplib.Dval, input yplib.IoNode) (string, error) {
 	return urlIo.GetNode().Value, nil
 }
 
-func getHeaders(headersResolver yplib.Dval, input yplib.IoNode) (map[string][]string, error) {
+func getHeaders(headersResolver yalib.Dval, input yalib.IoNode) (map[string][]string, error) {
 	headers := map[string][]string{}
 	headersIo, err := headersResolver(input)
 	if err != nil {
@@ -138,17 +137,17 @@ func getHeaders(headersResolver yplib.Dval, input yplib.IoNode) (map[string][]st
 	return decodeNormalizedHeaderMap(headersIo)
 }
 
-func getPayload(h Http, input yplib.IoNode) (io.Reader, string, error) {
+func getPayload(h Http, input yalib.IoNode) (io.Reader, string, error) {
 	if reader, err := getPayloadJson(h.PayloadJson, input); err == nil {
 		return reader, "application/json", nil
-	} else if reader, err := getPayloadJson(h.PayloadJson, input); err == nil {
+	} else if reader, err := getPayloadForm(h.PayloadForm, input); err == nil {
 		return reader, "application/x-www-form-urlencoded", nil
 	}
 
 	return nil, "", errors.New("payload not found")
 }
 
-func getPayloadForm(resolver yplib.Dval, input yplib.IoNode) (io.Reader, error) {
+func getPayloadForm(resolver yalib.Dval, input yalib.IoNode) (io.Reader, error) {
 	formIo, err := resolver(input)
 	if err != nil {
 		return nil, err
@@ -162,24 +161,21 @@ func getPayloadForm(resolver yplib.Dval, input yplib.IoNode) (io.Reader, error) 
 	return strings.NewReader(url.Values(form).Encode()), nil
 }
 
-func getPayloadJson(resolver yplib.Dval, input yplib.IoNode) (io.Reader, error) {
+func getPayloadJson(resolver yalib.Dval, input yalib.IoNode) (io.Reader, error) {
 	jsonIo, err := resolver(input)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(jsonIo.GetNode().Content[0].Value)
 
 	jsonData, err := jsonIo.ToJson()
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("JSON: ", string(jsonData))
 	return bytes.NewBuffer(jsonData), nil
 }
 
-func decodeNormalizedHeaderMap(input yplib.IoNode) (map[string][]string, error) {
+func decodeNormalizedHeaderMap(input yalib.IoNode) (map[string][]string, error) {
 	headers := map[string][]string{}
 	headersIo := input.Yq(wrapValuesInSeq)
 

@@ -4,18 +4,18 @@ import (
 	"bytes"
 	"html/template"
 
-	"github.com/glopal/go-yp/yplib"
+	"github.com/glopal/go-ya/yalib"
 )
 
 func init() {
-	yplib.RegisterStep("tmpl", NewTmpl)
+	yalib.RegisterStep("tmpl", NewTmpl)
 }
 
 type Tmpl struct {
 	tmpl *template.Template
 }
 
-func NewTmpl(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Step, error) {
+func NewTmpl(tag string, node yalib.Node, ech yalib.ExecContextHooks) (yalib.Step, error) {
 	tmpl, err := template.New("test").Parse(node.Node.Value)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func NewTmpl(tag string, node yplib.Node, ech yplib.ExecContextHooks) (yplib.Ste
 	}, nil
 }
 
-func (t Tmpl) Run(ion yplib.IoNode) (yplib.IoNode, error) {
+func (t Tmpl) Run(ion yalib.IoNode) (yalib.IoNode, error) {
 	var ctx interface{}
 	err := ion.GetNode().Decode(&ctx)
 	if err != nil {
