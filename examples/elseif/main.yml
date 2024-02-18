@@ -1,0 +1,10 @@
+--- !yp/main
+steps:
+  - elseif:
+      '. == "foo"':
+        steps:
+          - context:
+              found: true
+      true:
+        steps:
+          - context: "ELSE"

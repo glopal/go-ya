@@ -1,0 +1,10 @@
+--- !yp/main
+steps:
+  - context: 
+      - foo
+      - bar
+  - for:
+      steps:
+        - context:
+            !yq .: "bla"
+    

@@ -1,0 +1,19 @@
+--- !yp/main
+steps:
+  - wf: init
+  - wf: checks
+
+--- !wf/init
+steps:
+  - context:
+      hosts:
+        - google.com
+        - amazon.com
+      uris:
+        - /
+        - /index.html
+        - /foo
+
+--- !wf/checks
+  - http: !get
+      urls: !yq '[http://" + .hosts[] + .uris[]]''

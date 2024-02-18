@@ -1,0 +1,10 @@
+--- !yp/main
+steps:
+  - http: !post
+      url: "https://httpbin.org/post"
+      payload:
+        form:
+          username: mmenzies
+          password: foobar123
+          _csrf: kdfjghsdkjfghsdkjgh
+  - yq: '.response.body | from_json | .form | ... style=""'

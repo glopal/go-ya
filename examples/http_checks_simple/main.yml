@@ -1,0 +1,27 @@
+--- !yp/main
+steps:
+  - wf: init
+  - wf: checks
+
+--- !wf/init
+steps:
+  - context: 
+    - https://httpbin.org/get
+    - https://httpbin.org/get?bla=1
+
+--- !wf/checks
+  steps:
+    - for:
+        steps:
+          - http:
+              url: .
+              headers:
+                x-foo: !yq .
+                x-bar: [1, 2]
+    # - yq: ".[0].body | from_json"
+    # - tmpl: |
+    #     Origin: "{{ .origin }}"
+    #     Url: "{{ .url }}"
+    #     Host: "{{ .headers.Host }}"
+        
+    

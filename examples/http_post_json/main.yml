@@ -1,0 +1,13 @@
+--- !yp/main
+steps:
+  - context:
+      payload:
+        id: 1234
+        name: mike
+        items:
+          - hat
+          - shirt
+  - http: !post
+      url: "https://httpbin.org/post"
+      payload:
+        json: !yq .payload
